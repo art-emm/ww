@@ -21,6 +21,11 @@ const menuItems = [
     thumb: 'lighthouse_fanad',
     index: 2,
     label: 'Library'
+  },
+  {
+    thumb: 'lighthouse_fanad',
+    index: 3,
+    label: 'New Dictionary'
   }
 ]
 class MenuAndroid extends Component {

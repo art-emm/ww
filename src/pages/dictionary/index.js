@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import EStyleSheet from 'react-native-extended-stylesheet'
-//const translate = require('google-translate-api');
+// const translate = require('google-translate-api');
 
+// npmconst Translate = require('@google-cloud/translate');
 
 import {
   ScrollView,
@@ -13,6 +14,8 @@ import {
   StyleSheet,
   TouchableHighlight
 } from 'react-native'
+
+import Library from '../library/index'
 var isHidden = true
 
 const allLangs = {
@@ -24,76 +27,212 @@ const allLangs = {
   'es': 'es'
 }
 
+const languages = {
+  rowOne: [
+    {
+      lang: 'Bulgarian',
+      code: 'bg'
+    }, {
+      lang: 'Croatian',
+      code: 'hr'
+    }, {
+      lang: 'Czech',
+      code: 'cs'
+    }, {
+      lang: 'Danish',
+      code: 'da'
+    }, {
+      lang: 'Dutch',
+      code: 'nl'
+    }, {
+      lang: 'English',
+      code: 'en'
+    }, {
+      lang: 'Estonian',
+      code: 'et'
+    }, {
+      lang: 'Finnish',
+      code: 'fi'
+    }, {
+      lang: 'French',
+      code: 'fr'
+    }, {
+      lang: 'German',
+      code: 'de'
+    }, {
+      lang: 'Greek',
+      code: 'el'
+    }, {
+      lang: 'Hungarian',
+      code: 'hu'
+    }, {
+      lang: 'Irish',
+      code: 'ga'
+    }
+  ],
+  rowTwo: [
+    {
+      lang: 'Italian',
+      code: 'it'
+    }, {
+      lang: 'Latvian',
+      code: 'lv'
+    }, {
+      lang: 'Lithuanian',
+      code: 'lt'
+    }, {
+      lang: 'Maltese',
+      code: 'mt'
+    }, {
+      lang: 'Polish',
+      code: 'pl'
+    }, {
+      lang: 'Portuguese',
+      code: 'pt'
+    }, {
+      lang: 'Romanian',
+      code: 'ro'
+    }, {
+      lang: 'Russian',
+      code: 'ru'
+    }, {
+      lang: 'Slovak',
+      code: 'sk'
+    }, {
+      lang: 'Slovenian',
+      code: 'sl'
+    }, {
+      lang: 'Spanish',
+      code: 'es'
+    }, {
+      lang: 'Swedish',
+      code: 'sv'
+    }, {
+      lang: 'Ukrainian',
+      code: 'uk'
+    }
+  ]
+}
+
 import { TranslateItem } from './components'
 import { Login } from '../../pages'
 class Dictionary extends Component {
-  constructor() {
+  constructor () {
     super()
     this.state = {
       searchText: '',
+      showLangs: false,
+      selectedLang: '',
       translates: {
         'ru': '',
         'fr': '',
         'es': ''
       },
       bounceValue: new Animated.Value(0),  // This is the initial position of the subview
-      buttonText: 'Show Subview'
+      arrowIndex: 0
     }
+    this.navigateTo = this.navigateTo.bind(this)
   }
-_toggleSubview() {
-    this.setState({
-      buttonText: !isHidden ? 'Show Subview' : 'Hide Subview'
+  
+  toggleLangs = (selectedLang, arrowIndex) => {
+    let { showLangs } = this.state
+    showLangs = !showLangs
+    this.setState({showLangs, selectedLang, arrowIndex})
+  }
+
+  selectLang = (newLang, oldLang) => {
+    let { translates, showLangs } = this.state
+    let keys = Object.keys(translates)
+    const indexOfItem = keys.indexOf(oldLang)
+    keys[indexOfItem] = newLang
+    translates = {}
+    keys.map(k => {
+      translates[k] = ''
     })
-
-    var toValue = 400
-
-    if (isHidden) {
-      toValue = 0
-    }
-
-    // This will animate the transalteY of the subview between 0 & 100 depending on its current state
-    // 100 comes from the style below, which is the height of the subview.
-    Animated.timing(
-      this.state.bounceValue,
-      {
-        toValue: toValue,
-        duration: 300
-      }
-    ).start()
-
-    isHidden = !isHidden
+    this.setState({selectedLang: newLang, translates, showLangs: false}, () => {
+      this.handleTextInput({nativeEvent: {text: this.state.textToTranslate || ''}})      
+    })    
   }
 
-  render() {
-    let { translates, bounceValue } = this.state
-    console.log(translates)
+  navigateTo (data) {
+    console.log('navigate to', this.props)
+    this.props.navigator.push({
+      index: 2,
+      passProps: {
+        name: 'property'
+      }
+    })
+  }
+  render () {
+    let { translates, bounceValue, showLangs, selectedLang, arrowIndex } = this.state
+    let selectedCircle = {
+      backgroundColor: '#47C3CF'
+    }
+    let top = {
+      top: 71 + arrowIndex * 61
+    }
+    let topInner = {
+      top: 72 + arrowIndex * 61
+    }
     const langs = Object.keys(translates)
     return (
       <View style={styles.layout} >
-        <Text style={styles.headerTitle} >DICTIONARY</Text>
+        <Text style={styles.headerTitle}>DICTIONARY</Text>
         <TextInput style={styles.input}
           editable
           onChange={this.handleTextInput.bind(this)}
         />
-        {langs.length > 0 && langs.map(l => {
+        {langs.length > 0 && langs.map((l,i) => {
           return (<TranslateItem key={l}
+            onNavigate={this.navigateTo}
+            onChooseLang={this.toggleLangs.bind(this, l, i)}
             lang={l}
             value={translates[l]}
           />)
         })}
-        {/* <Animated.View style={[styles.allLangs,
-              {transform: [{translateX: this.state.bounceValue}]}]} >
-            <View style={styles.arrow} />
-          </Animated.View> */}
+        { showLangs &&  <Animated.View style={styles.popupWrapper} >
+          <View style={styles.talkBubble}>
+            <View style={styles.talkBubbleSquare} >
+              <View style={styles.rowOne} >
+                {languages.rowOne.map(l => {
+                  return (
+                    <TouchableHighlight  onPress={this.selectLang.bind(this, l.code, selectedLang)} style={styles.translate} key={l.code}>
+                    <View style={styles.translate} key={l.code}>
+                      <View style={[styles.translateCircle, selectedLang === l.code && selectedCircle]} />
+                      <Text style={styles.translateText}>{l.lang}</Text>
+                    </View>
+                                        </TouchableHighlight>
+
+                  )
+                })}
+              </View>
+              <View style={styles.rowOne} >
+                {languages.rowTwo.map(l => {
+                  return (
+                    <TouchableHighlight  onPress={this.selectLang.bind(this, l.code, selectedLang)} style={styles.translate} key={l.code}>
+                    <View style={styles.translate} key={l.code}>
+                    <View style={[styles.translateCircle, selectedLang === l.code && selectedCircle]} />
+                      <Text style={styles.translateText}>{l.lang}</Text>
+                    </View>
+                    </TouchableHighlight>
+                  )
+                })}
+              </View>
+            </View>
+          </View>
+          <View style={[styles.talkBubbleTriangle, top]} ><Text>123ewqeqwe</Text></View>
+          <View style={[styles.talkBubbleTriangleInner, topInner]} ><Text>123ewqeqwe</Text></View>
+        </Animated.View>}
       </View>
     )
-}
+  }
 
-  handleTextInput(e) {
+  handleTextInput = (e) => {
     const { text } = e.nativeEvent
-    const lang = {
+    const { translates } = this.state
+    const lang = { 
       from: 'en',
-      to: ['ru', 'fr', 'es']
+      to: Object.keys(translates)
     }
     let promises = []
     lang.to.forEach(to => {
@@ -106,40 +245,117 @@ _toggleSubview() {
       lang.to.forEach((l, i) => {
         translates[l] = data[i][0]
       })
-      this.setState({translates})
+      this.setState({translates, textToTranslate: text})
     })
     .catch(err => {
       console.log(err)
     })
   }
 
-  _translate(text, from, to) {
-
-    //return fetch(`https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20170302T203520Z.3755a9e489fefc32.9ba6a809e607a2d9faef7519e732eaf0d97578dd&text=${text}&lang=${from}-${to}&format=plain`, {
-    return fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl="   + from + "&tl=" + to + "&dt=t&q=" + text)
+  _translate (text, from, to) {
+    return fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=' + from + '&tl=' + to + '&dt=t&q=' + text)
      .then((response) => response.json())
   }
-
 }
 
 const styles = StyleSheet.create({
+  translateText: {
+    fontSize: 20,
+    marginLeft: 5
+  },
+  translate: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+
+  translateCircle: {
+    marginTop: 2,
+    width: 14,
+    height: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#95989A'
+  },
+
+  rowOne: {
+    width: 120
+  },
+
+  talkBubble: {
+    flex: 1,
+    marginLeft: 50,
+    backgroundColor: 'transparent'
+  },
+
+  talkBubbleSquare: {
+    paddingTop: 16,
+    paddingLeft: 10,
+    paddingBottom: 16,
+    flex: 1,
+    flexDirection: 'row',
+    width: 260,
+    height: 390,
+    borderRadius: 10,
+    borderColor: '#95989A',
+    borderWidth: 1,
+    backgroundColor: '#EEEEEE'
+  },
+
+  talkBubbleTriangle: {
+    position: 'absolute',
+    left: 27,
+    width: 0,
+    height: 0,
+    borderTopColor: 'transparent',
+    borderTopWidth: 8,
+    borderRightWidth: 24,
+    borderRightColor: '#95989A',
+    borderBottomWidth: 8,
+    borderBottomColor: 'transparent'
+  },
+
+  talkBubbleTriangleInner: {
+    position: 'absolute',
+    left: 29,
+    width: 0,
+    height: 0,
+    borderTopColor: 'transparent',
+    borderTopWidth: 7,
+    borderRightWidth: 23,
+    borderRightColor: '#EEEEEE',
+    borderBottomWidth: 7,
+    borderBottomColor: 'transparent'
+  },
+  popupWrapper: {
+    position: 'absolute',
+    right: 12,
+    top: 40,
+    width: 310,
+    height: 450,
+    borderColor: 'black'
+  },
+
   headerTitle: {
     alignItems: 'center',
     justifyContent: 'center',
     width: 320,
     height: 24,
+    flex: 1,
+    maxHeight: 24,
     // fontWeight: 'medium',
     fontFamily: 'Helvetica Neue',
-    fontSize: 10,    
+    fontSize: 10,
     alignItems: 'center',
     textAlign: 'center',
     fontWeight: '500',
     backgroundColor: '#EEEEEE',
-    fontSize: 12
+    fontSize: 10,
+    paddingTop: 6
   },
   defaultLang: {
     flex: 10,
-        flexWrap: 'wrap'
+    flexWrap: 'wrap'
 
   },
 
@@ -151,7 +367,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     width: 50,
     height: 50,
-    transform:[{rotate: '45 deg'}],
+    transform: [{rotate: '45 deg'}],
     zIndex: 9,
     elevation: 9
   },
@@ -161,7 +377,7 @@ const styles = StyleSheet.create({
     right: 0,
     overflow: 'visible',
     top: 0,
-    flex:1,
+    flex: 1,
     // flexWrap: 'wrap',
     flexDirection: 'row',
     backgroundColor: '#e939e9',
@@ -172,10 +388,10 @@ const styles = StyleSheet.create({
   },
 
   layout: {
-    flex:1,
+    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    padding: 20,
+    padding: 12,
     paddingTop: 0,
     zIndex: 1
   },

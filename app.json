@@ -1,4 +1,7 @@
 {
   "name": "ww",
-  "displayName": "ww"
+  "displayName": "ww",
+  "expo": {
+    "sdkVersion": "18.0.0"
+  }
 }

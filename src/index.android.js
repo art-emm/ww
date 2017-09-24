@@ -19,7 +19,7 @@ const routes = [
   {title: 'Dictionary', index: 0},
   {title: 'Library', index: 1},
   {title: 'Fanad Lighthouse', index: 2},
-  {title: 'The St. Augustine Light', index: 3},
+  {title: 'New Dictionary', index: 3},
   {title: 'Peggys Point Lighthouse', index: 4},
   {title: 'Tower of Hercules', index: 5},
   {title: 'Bass Harbor Head Station', index: 6},
@@ -35,6 +35,8 @@ const toolbarActions = [
 
 import Dictionary  from './pages/dictionary'
 import Library  from './pages/library'
+import NewDictionary  from './pages/newDictionary'
+
 // import About from '../views/About';
 // import Credits from '../views/Credits';
 // import Lindau from '../views/lighthouses/Lindau';
@@ -175,9 +177,11 @@ class App extends Component {
               const idx = route.index - 1
               switch (route.index) {
                  case 1:
-                   return <Dictionary index={idx} />
+                   return <Dictionary index={idx} navigator={navigator} />
                 case 2:
                   return <Library index={idx} />
+                case 3:
+                  return <NewDictionary index={idx} />
               }
               // switch (route.index) {
               //   case 0:

@@ -27,7 +27,7 @@ class Library extends Component {
     render() {
       const dicts = [
         {
-          knowledge: 23,
+          knowledge: 90,
           subject: 'test1,',
           wordsCount: 30,
           img: 'http://www.ullmansailssandiego.com/images/sail_trim_and_techniques.jpg',
@@ -121,7 +121,8 @@ class Library extends Component {
            justifyContent: 'space-around', 
           }}>
         {dicts.map(d => {
-            return (<CircleItem key={d.id}
+            return (
+        <CircleItem key={d.id}
           percent={d.knowledge}
           radius={42}
           knowledge={d.knowledge}
@@ -131,6 +132,7 @@ class Library extends Component {
           color='#3399FF'
           shadowColor='#fff' 
           uri={d.img}
+          isNew={true}
           >
            </CircleItem>)
           })}

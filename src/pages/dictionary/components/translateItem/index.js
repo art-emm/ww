@@ -1,88 +1,92 @@
 import React, { Component } from 'react'
 import {
-  ScrollView,
   View,
   Text,
-  TextInput,
   Image,
-  StyleSheet, TouchableOpacity, Modal
+  StyleSheet, TouchableOpacity
 } from 'react-native'
+import Library from '../../../library'
 
 class TranslateItem extends Component {
-  constructor() {
+  constructor () {
     super()
     this.state = {
       modalVisible: false
     }
+    this.openLibrary = this.openLibrary.bind(this)
   }
 
-  render() {
+  openLibrary () {
+    console.log(this.props)
+    this.props.onNavigate('word')
+  }
+  render () {
     let { value, lang } = this.props
     console.log(value[0], lang)
     const syns = [
       {
         title: 'asdasdaasd',
         translates: '123ewqe, 321321, 321312,3 3123, ewewe ewewe, ewe, ewe'
-     },
+      },
       {
         title: 'asdssdaa',
         translates: '123ewqe, 321321, 321312,3 3123, ewewe ewewe, ewe, ewe'
-     }
+      }
     ]
-       
+
     return (
       <View style={styles.baseRow}>
-      <View style={styles.row}>
-        <TouchableOpacity onPress={this._toggleLangs}>
-          <View onPress={this._toggleLangs}>
-            <Image style={styles.dotsIcon} source={require('../../../../public/dots.png')} />
+        <View style={styles.row}>
+          <TouchableOpacity onPress={this.props.onChooseLang}>
+            <View onPress={this._toggleLangs}>
+              <Image style={styles.dotsIcon} source={require('../../../../public/dots.png')} />
+            </View>
+          </TouchableOpacity>
+          <View style={styles.lang}>
+            <Text style={styles.langText}>{lang.toUpperCase()}</Text>
           </View>
-        </TouchableOpacity>
-        <View style={styles.lang}>
-          <Text style={styles.langText}>{lang.toUpperCase()}</Text>
-        </View>
-        <View style={styles.trans}>
-          <Text style={styles.transText}>{value && value[0] && value[0][0]}</Text>
-        </View>
-        <View style={styles.addIcon}>
-          <Image
-            source={require('../../../../public/sound.png')}
-          />
-        </View>
-        <View>
-          <Image
-            source={require('../../../../public/add.png')}
-          />
-        </View>
-        </View>
-      { false && <View style={styles.synWrapper}>
-        <View style={styles.synHeaderRow}>
-          <View style={styles.synIconWrapper}>
-              <View style={styles.lineHorizontal} />
-              <View style={styles.lineSmall} /> 
+          <View style={styles.trans}>
+            <Text style={styles.transText}>{value && value[0] && value[0][0]}</Text>
           </View>
+          <View style={styles.addIcon}>
+            <Image
+              source={require('../../../../public/sound.png')}
+          />
+          </View>
+          <TouchableOpacity onPress={this.openLibrary}>
+            <Image onPress={this.openLibrary}
+              source={require('../../../../public/add.png')}
+          />
+          </TouchableOpacity>
         </View>
-        {syns.map((s,i) => {
-          return (
-            <View key={i} style={styles.synRow}>
+        { false && <View style={styles.synWrapper}>
+          <View style={styles.synHeaderRow}>
             <View style={styles.synIconWrapper}>
-            <View style={styles.lineSmall} />
-              <View style={styles.point} />
-              <View style={styles.line} />
+              <View style={styles.lineHorizontal} />
+              <View style={styles.lineSmall} />
             </View>
-            <View style={styles.synTextWrapper}>
-              <Text style={styles.synTextHeader}>test</Text>
-              <Text style={styles.synTextContent} numberOfLines={2}>test, wew, ewewe , ewewe, 1111, 11111,1111 ewew ew, ewew, ewew</Text>
-            </View>
-            </View>
+          </View>
+          {syns.map((s, i) => {
+            return (
+              <View key={i} style={styles.synRow}>
+                <View style={styles.synIconWrapper}>
+                  <View style={styles.lineSmall} />
+                  <View style={styles.point} />
+                  <View style={styles.line} />
+                </View>
+                <View style={styles.synTextWrapper}>
+                  <Text style={styles.synTextHeader}>test</Text>
+                  <Text style={styles.synTextContent} numberOfLines={2}>test, wew, ewewe , ewewe, 1111, 11111,1111 ewew ew, ewew, ewew</Text>
+                </View>
+              </View>
             )
-        })}
-      </View>}
+          })}
+        </View>}
       </View>
     )
   }
 
-  setModalVisible(visible) {
+  setModalVisible (visible) {
     this.setState({modalVisible: visible})
   }
 }
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
   point: {
     width: 14,
     height: 14,
-    borderWidth: 1, 
+    borderWidth: 1,
     borderRadius: 15
   },
 
@@ -119,9 +123,9 @@ const styles = StyleSheet.create({
   synTextHeader: {
     marginLeft: 10,
     color: '#46C3CF',
-    fontWeight:'bold',
+    fontWeight: 'bold',
     borderWidth: 1
-    
+
   },
 
   synTextContent: {
@@ -133,22 +137,22 @@ const styles = StyleSheet.create({
   synRow: {
     borderWidth: 1,
     flex: 1,
-    flexShrink:0 ,
+    flexShrink: 0,
     flexDirection: 'row',
     backgroundColor: '#F8F8F8'
   },
 
   synHeaderRow: {
-   //flex: 1,
-   maxHeight: 6,
-   backgroundColor: '#F8F8F8'   
+   // flex: 1,
+    maxHeight: 6,
+    backgroundColor: '#F8F8F8'
   },
 
   synTextWrapper: {
    // flex: 1
-   borderWidth: 1,
-   flexGrow: 1
-   //flexWrap: 'wrap'
+    borderWidth: 1,
+    flexGrow: 1
+   // flexWrap: 'wrap'
   },
 
   synIconWrapper: {
@@ -158,29 +162,28 @@ const styles = StyleSheet.create({
   },
 
   synWrapper: {
+    maxHeight: 100,
     flex: 1,
     width: 300,
     marginLeft: 10
   },
 
   baseRow: {
-    //flex: 1,
-    borderWidth: 1,
-    flexDirection: 'column', 
+    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center', 
+    alignItems: 'center',
     marginTop: 10
   },
-  
+
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
-  
+
   dotsIcon: {
     height: 25,
-    marginRight: 5
+    marginRight: 2
   },
 
   addIcon: {
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
 
   langText: {
     fontFamily: 'Helvetica Neue',
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: '400'
   },
 
@@ -206,13 +209,13 @@ const styles = StyleSheet.create({
   },
 
   transText: {
-    marginTop:0,
+    marginTop: 0,
     color: '#46C3CF',
     borderBottomColor: '#46C3CF',
     borderBottomWidth: 1,
     height: 25,
     marginBottom: 24,
-    marginRight:10
+    marginRight: 10
   }
 })
 
